@@ -1,4 +1,4 @@
-import { Controller, Post, Put,Get,Delete, Param, Body, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Put,Get,Delete, Query,Param, Body, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -13,7 +13,10 @@ export class UserController {
     console.log('get user all');
     return this.userService.findAll();
   }
-
+  @Get('search')
+  async search(@Query('query') query: string) {
+    return this.userService.search(query);
+  }
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.userService.findOne(id);

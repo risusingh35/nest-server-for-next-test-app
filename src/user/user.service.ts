@@ -12,7 +12,14 @@ export class UserService {
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
   }
-
+  async search(query: string): Promise<User[]> {
+    return this.userModel.find({
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } },
+      ],
+    }).exec();
+  }
   async findOne(id: string): Promise<User> {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
