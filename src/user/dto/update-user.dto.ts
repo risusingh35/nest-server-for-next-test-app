@@ -6,6 +6,7 @@ export class UpdateUserDto {
   name?: string;
 
   @IsEmail()
-  @IsOptional()
   email?: string;
+
+  image?: Buffer; 
 }

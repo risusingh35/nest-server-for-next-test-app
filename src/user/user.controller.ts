@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Post, Put,Get,Delete, Param, Body, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,6 +10,7 @@ export class UserController {
 
   @Get()
   async findAll() {
+    console.log('get user all');
     return this.userService.findAll();
   }
 
@@ -18,15 +20,32 @@ export class UserController {
   }
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  @UseInterceptors(FileInterceptor('image'))
+  async create(@Body() createUserDto: CreateUserDto,    @UploadedFile() file: Express.Multer.File,) {
+    console.log('post user create');
+    console.log('file', file);
+    console.log('createUserDto', createUserDto);
+    
+    if (file) {
+      createUserDto['image'] = file.buffer;
+    }
     return this.userService.create(createUserDto);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    console.log("id",id);
-    console.log("updateUserDto",updateUserDto);
-    
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log('id', id);
+    console.log('updateUserDto', updateUserDto);
+    console.log('file', file);
+    if (file) {
+      updateUserDto['image'] = file.buffer;
+    }
+
     return this.userService.update(id, updateUserDto);
   }
 
