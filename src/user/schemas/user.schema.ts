@@ -6,7 +6,7 @@ export class User extends Document {
   @Prop({ required: true })
   name: string;
   @Prop({ required: true })
-  position: string;
+  role: string;
   @Prop({ required: true })
   contact: string;
   @Prop({ required: true })

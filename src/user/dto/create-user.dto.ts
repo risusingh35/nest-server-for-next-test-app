@@ -8,7 +8,7 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  position: string;
+  role: string;
 
   @IsString()
   contact: string;
