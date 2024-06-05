@@ -1,30 +1,34 @@
-
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import {EnvModule  } from "./envService/env.module";
+import { EnvModule } from './envService/env.module';
 import { ContactusModule } from './contactus/contactus.module';
+import { ErrorLoggerMiddleware } from './middlewares/error-logger/error-logger.middleware';
+
 @Module({
   imports: [
-     ConfigModule.forRoot({
-    isGlobal: true, // Makes the module globally available
-  }),
-  
-  MongooseModule.forRootAsync({
-    imports: [ConfigModule],
-    useFactory: (configService: ConfigService) => ({
-      uri: configService.get<string>('MONGODB_URI'),
+    ConfigModule.forRoot({
+      isGlobal: true, // Makes the module globally available
     }),
-    inject: [ConfigService],
-  }),
-  UserModule,
-  EnvModule,
-  ContactusModule
-],
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
+    UserModule,
+    EnvModule,
+    ContactusModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ErrorLoggerMiddleware).forRoutes('*');
+  }
+}
